@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ActCinematicIntro } from '../components/ActCinematicIntro'
 import { DialogueBox } from '../components/DialogueBox'
 import { SymbolReconstruction } from '../components/SymbolReconstruction'
-import { PuzzleInput } from '@/components/kennedy/shared/PuzzleInput'
+import { PuzzleInput } from '@/components/deadlight/shared/PuzzleInput'
 import styles from '../operation-deadlight.module.css'
 
 interface Act5Props {

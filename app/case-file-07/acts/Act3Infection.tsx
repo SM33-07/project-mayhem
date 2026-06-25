@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ActCinematicIntro } from '../components/ActCinematicIntro'
 import { DialogueBox } from '../components/DialogueBox'
 import { ProfileMatch } from '../components/ProfileMatch'
-import { PuzzleInput } from '@/components/kennedy/shared/PuzzleInput'
+import { PuzzleInput } from '@/components/deadlight/shared/PuzzleInput'
 import styles from '../operation-deadlight.module.css'
 
 interface Act3Props {
@@ -55,7 +55,7 @@ export function Act3Infection({ onPuzzleSolved }: Act3Props) {
             <p style={{ marginTop: '1rem' }}>The final complete medical report ends with a chilling warning: <strong>&quot;We can no longer determine who is infected.&quot;</strong> To secure the facility, you must calibrate the diagnostic subsystems of the quarantine terminal and bypass the locking mechanism.</p>
           </div>
 
-          <ProfileMatch onSolved={() => {}} />
+          <ProfileMatch onSolved={() => { }} />
 
           <div style={{ marginTop: '2rem' }}>
             <DialogueBox

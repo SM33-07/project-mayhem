@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ActCinematicIntro } from '../components/ActCinematicIntro'
 import { DialogueBox } from '../components/DialogueBox'
 import { PersonnelDossier } from '../components/PersonnelDossier'
-import { PuzzleInput } from '@/components/kennedy/shared/PuzzleInput'
+import { PuzzleInput } from '@/components/deadlight/shared/PuzzleInput'
 import styles from '../operation-deadlight.module.css'
 
 interface Act6Props {
@@ -54,7 +54,7 @@ export function Act6Identity({ onPuzzleSolved }: Act6Props) {
             <p style={{ marginTop: '1rem' }}>Expand and cross-reference the 12 personnel files. Compare clearances, assignment dates, and patrols to locate the plant. Once identified, you will need to sort their scrambled timeline logs to restore database integrity and reveal the decryption instructions.</p>
           </div>
 
-          <PersonnelDossier onSolved={() => {}} />
+          <PersonnelDossier onSolved={() => { }} />
 
           <div style={{ marginTop: '2rem' }}>
             <DialogueBox

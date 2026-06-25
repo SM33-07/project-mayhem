@@ -7,7 +7,7 @@ import { ActCinematicIntro } from '../components/ActCinematicIntro'
 import { DialogueBox } from '../components/DialogueBox'
 import { MessageReconstruction } from '../components/MessageReconstruction'
 import { FragmentCollect } from '../components/FragmentCollect'
-import { PuzzleInput } from '@/components/kennedy/shared/PuzzleInput'
+import { PuzzleInput } from '@/components/deadlight/shared/PuzzleInput'
 import { useActProgress } from '../hooks/useActProgress'
 import styles from '../operation-deadlight.module.css'
 

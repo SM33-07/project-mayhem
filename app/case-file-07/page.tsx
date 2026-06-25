@@ -12,7 +12,7 @@ import { Act5BlackSymbol } from './acts/Act5BlackSymbol'
 import { Act6Identity } from './acts/Act6Identity'
 import { Act7Memory } from './acts/Act7Memory'
 import { Act8FinalTransmission } from './acts/Act8FinalTransmission'
-import { EchoGuide } from '@/components/kennedy/shared/EchoGuide'
+import { EchoGuide } from '@/components/deadlight/shared/EchoGuide'
 import { useActProgress } from './hooks/useActProgress'
 import styles from './operation-deadlight.module.css'
 
@@ -75,13 +75,13 @@ export default function OperationDeadlightPage() {
 
   const actProgress =
     isComplete('act-8') ? 8 :
-    isComplete('act-7') ? 7 :
-    isComplete('act-6') ? 6 :
-    isComplete('act-5') ? 5 :
-    isComplete('act-4') ? 4 :
-    isComplete('act-3') ? 3 :
-    isComplete('act-2') ? 2 :
-    hydrated ? 1 : 0
+      isComplete('act-7') ? 7 :
+        isComplete('act-6') ? 6 :
+          isComplete('act-5') ? 5 :
+            isComplete('act-4') ? 4 :
+              isComplete('act-3') ? 3 :
+                isComplete('act-2') ? 2 :
+                  hydrated ? 1 : 0
 
   if (!hydrated) {
     return (
