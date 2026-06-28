@@ -1,5 +1,4 @@
 import { neon } from '@neondatabase/serverless';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
