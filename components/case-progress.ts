@@ -5,8 +5,17 @@ export async function markCaseCompleted(caseNum: string) {
   if (typeof window === "undefined") return;
 
   const key = `case-${caseNum}-completed`;
+  const alreadyCompleted =
+    localStorage.getItem(key) === "true" ||
+    document.cookie.includes(`${key}=true`);
+
   localStorage.setItem(key, "true");
   document.cookie = `${key}=true; path=/; max-age=31536000; SameSite=Lax`;
+
+  const caseInt = parseInt(caseNum, 10);
+  if (!alreadyCompleted && caseInt >= 1 && caseInt <= 8) {
+    sessionStorage.setItem("just-solved-case", caseNum);
+  }
 
   try {
     await fetch("/api/cases/progress", {
