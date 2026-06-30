@@ -26,11 +26,7 @@ export default function OperationDeadlightPage() {
         const res = await fetch('/hunt/case-07/api/progress')
         const data = await res.json()
         if (!data.authenticated) {
-          await fetch('/hunt/case-07/api/auth/session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'Demo Agent', email: 'agent@aetherion.org' }),
-          })
+          window.location.href = '/';
         }
       } catch (err) {
         console.error('Session initialization failed:', err)

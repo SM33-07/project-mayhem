@@ -19,22 +19,13 @@ export default function HuntPage() {
     // 2. Fetch latest from database API and sync
     async function syncProgress() {
       try {
-        let res = await fetch("/api/cases/progress");
-        let data = await res.json();
+        const res = await fetch("/api/cases/progress");
+        const data = await res.json();
         
-        // Auto-authenticate session if it is not active
+        // Redirect to login if not authenticated
         if (data.success && !data.authenticated) {
-          const authRes = await fetch('/hunt/case-07/api/auth/session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'Demo Agent', email: 'agent@aetherion.org' }),
-          });
-          const authData = await authRes.json();
-          if (authData.success) {
-            // Re-fetch progress after establishing the session
-            res = await fetch("/api/cases/progress");
-            data = await res.json();
-          }
+          window.location.href = '/';
+          return;
         }
 
         if (data.success && data.completedCases) {
