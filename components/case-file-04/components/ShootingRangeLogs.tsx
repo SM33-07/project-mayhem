@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PuzzleProps } from "../types";
 
 // --- Types ---
@@ -151,11 +151,29 @@ export default function ShootingRangeLogsPuzzle({
     playSound("onSourceHint");
   };
 
+  const [correctAnswer, setCorrectAnswer] = useState("INTRUDER_17");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/questions?caseId=04");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "shooting_range_logs");
+          if (q) setCorrectAnswer(q.answer.toUpperCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    load();
+  }, []);
+
   const verifyPuzzleAnswer = (e: React.FormEvent) => {
     e.preventDefault();
     if (disabled) return;
 
-    if (answerInput.trim().toUpperCase() === "INTRUDER_17") {
+    if (answerInput.trim().toUpperCase() === correctAnswer) {
       setStatusState("SUCCESS");
       playSound("onCorrect");
       if (onSolved) {

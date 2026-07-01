@@ -189,12 +189,30 @@ export default function AudioGame({
     };
   }, []);
 
+  const [correctPasscode, setCorrectPasscode] = useState("CRIMSON");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/questions?caseId=04");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "audio_game");
+          if (q) setCorrectPasscode(q.answer.toUpperCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    load();
+  }, []);
+
   // ── SUBMIT VERIFICATION ──
   const handleVerify = () => {
     if (disabled || isSolvedState) return;
     const cleanInput = passcode.trim().toUpperCase();
 
-    if (cleanInput === "CRIMSON") {
+    if (cleanInput === correctPasscode) {
       playBeep(900, 0.2);
       setIsSolvedState(true);
       setIsModalOpen(false);

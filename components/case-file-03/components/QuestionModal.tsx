@@ -12,10 +12,27 @@ interface ForgottenHymnProps {
 function ForgottenHymn({ activeAnomaly, onSolve }: ForgottenHymnProps) {
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState(false);
+  const [correctAnswer, setCorrectAnswer] = useState('flame');
+
+  useEffect(() => {
+    async function loadAnswer() {
+      try {
+        const res = await fetch("/api/questions?caseId=03");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "caesar_scroll");
+          if (q) setCorrectAnswer(q.answer.toLowerCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadAnswer();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (answer.toLowerCase().trim() === 'flame') {
+    if (answer.toLowerCase().trim() === correctAnswer) {
       setError(false);
       onSolve();
     } else {
@@ -289,11 +306,28 @@ function ChronicleReconstruction({ activeAnomaly, onSolve }: ChronicleProps) {
   const [items, setItems] = useState<ParaItem[]>([]);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState(false);
+  const [correctAnswer, setCorrectAnswer] = useState('light leads only the worthy home');
 
   useEffect(() => {
     // Shuffle items once on load
     const shuffled = [...CHRONICLES_INITIAL].sort(() => Math.random() - 0.5);
     setItems(shuffled);
+  }, []);
+
+  useEffect(() => {
+    async function loadAnswer() {
+      try {
+        const res = await fetch("/api/questions?caseId=03");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "chronicle_sort");
+          if (q) setCorrectAnswer(q.answer.toLowerCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadAnswer();
   }, []);
 
   const moveItem = (index: number, direction: 'up' | 'down') => {
@@ -312,7 +346,7 @@ function ChronicleReconstruction({ activeAnomaly, onSolve }: ChronicleProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanAnswer = answer.toLowerCase().trim().replace(/\s+/g, ' ');
-    if (cleanAnswer === 'light leads only the worthy home') {
+    if (cleanAnswer === correctAnswer) {
       setError(false);
       onSolve();
     } else {

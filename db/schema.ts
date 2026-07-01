@@ -61,3 +61,19 @@ export const emailTransmissions = pgTable('email_transmissions', {
     deliveryStatus: text('delivery_status').default('pending'),
     deliveryError: text('delivery_error'),
 })
+
+export const case01Questions = pgTable('case01_questions', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    anomalyId: text('anomaly_id').notNull(),
+    puzzleIndex: integer('puzzle_index').notNull(),
+    question: text('question').notNull(),
+    answer: text('answer').notNull(),
+})
+
+export const caseQuestions = pgTable('case_questions', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    caseId: text('case_id').notNull(),
+    puzzleKey: text('puzzle_key').notNull(),
+    question: text('question').notNull(),
+    answer: text('answer').notNull(),
+})

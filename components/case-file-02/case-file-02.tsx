@@ -1160,44 +1160,75 @@ function PuzzleLogic({ onSolve, onPenalty }: { onSolve: () => void, onPenalty: (
 // PUZZLE VI — CROSSWORD
 // ═══════════════════════════════════════════════
 const CW = [
-  { clue: "Every empire loses to me, yet I never raise a sword.", answer: "TIME", keyLetter: "T" },
-  { clue: "Kingdoms rise beside me, explorers cross me, and history is often shaped by me.", answer: "OCEAN", keyLetter: "O" },
-  { clue: "Burn me, and memory survives only in mouths. Preserve me, and centuries may still speak.", answer: "RECORD", keyLetter: "R" },
-  { clue: "I don't prove the truth. I merely leave it with nowhere to hide.", answer: "EVIDENCE", keyLetter: "E" },
-  { clue: "Every answer is built upon me, though I am rarely the answer myself.", answer: "CLUE", keyLetter: "C" },
-  { clue: "Before the truth is read, this is always the first thing done.", answer: "OPENED", keyLetter: "O" },
-  { clue: "Two witnesses can possess completely different versions of me.", answer: "VIEW", keyLetter: "V" },
-  { clue: "Time buries me. Museums rescue me.", answer: "EXHIBIT", keyLetter: "E" },
-  { clue: "Remove one line from me, and tomorrow's historians inherit a different yesterday.", answer: "REGISTER", keyLetter: "R" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" },
+  { clue: "", answer: "", keyLetter: "" }
 ];
-const CW_KEYWORD = "TORECOVER";
+const CW_KEYWORD = "";
 function PuzzleCrossword({ onSolve, onPenalty }: { onSolve: () => void, onPenalty: () => void }) {
-  const [vals, setVals] = useState<string[]>(CW.map(() => "")); const [err, setErr] = useState("");
+  const [cwData, setCwData] = useState<typeof CW>(CW);
+  const [cwKeyword, setCwKeyword] = useState(CW_KEYWORD);
+  const [vals, setVals] = useState<string[]>(CW.map(() => ""));
+  const [err, setErr] = useState("");
   const [solved, setSolved] = useState(false);
   const { cd, active: cdActive, trigger: triggerCd } = useCooldown(120);
   const [attempts, setAttempts] = useState(0); const [hints, setHints] = useState(false);
+
+  useEffect(() => {
+    async function loadCw() {
+      try {
+        const res = await fetch("/api/questions?caseId=02");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const loaded = data.questions
+            .filter((q: any) => q.puzzleKey !== "cw_keyword")
+            .map((q: any) => ({
+              clue: q.question,
+              answer: q.answer,
+              keyLetter: q.answer ? q.answer[0] : ""
+            }));
+          const kw = data.questions.find((q: any) => q.puzzleKey === "cw_keyword")?.answer || "TORECOVER";
+          if (loaded.length > 0) {
+            setCwData(loaded);
+            setVals(loaded.map(() => ""));
+            setCwKeyword(kw);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load CW from DB:", err);
+      }
+    }
+    loadCw();
+  }, []);
+
   const submit = () => {
     if (cdActive) return;
-    const ok = CW.every((c, i) => vals[i].trim().toUpperCase() === c.answer);
+    const ok = cwData.every((c, i) => vals[i].trim().toUpperCase() === c.answer);
     if (ok) { setSolved(true); return; }
     const a = attempts + 1; setAttempts(a); onPenalty(); triggerCd(); sfx("error");
     setErr(a >= 2 ? "Still wrong — hints available below." : "One or more answers are incorrect.");
     if (a >= 2) setHints(true);
   };
-  const keyword = CW.map((c, i) => { const v = vals[i].trim().toUpperCase(); return v === c.answer ? c.keyLetter : (v.length > 0 ? v[0] : "_"); }).join("");
+  const keyword = cwData.map((c, i) => { const v = vals[i].trim().toUpperCase(); return v === c.answer ? c.keyLetter : (v.length > 0 ? v[0] : "_"); }).join("");
   return (
     <PuzzleShell title="Recovery Protocol" era="PROJECT NULL · ARCHIVE LOG 09" intro="Recover each missing word. The first letter of every recovered word reveals the next directive.">
       <CooldownOverlay cd={cd} />
-      {solved ? <SolvedCard word="TO RECOVER. The directive was never written outright — it survived only in the initials." fragLabel="TO RECOVER — FRAGMENT VI" fragColor="#cc3344" onReturn={onSolve} /> : (
+      {solved ? <SolvedCard word={`${cwKeyword || "TO RECOVER"}. The directive was never written outright — it survived only in the initials.`} fragLabel={`${cwKeyword || "TO RECOVER"} — FRAGMENT VI`} fragColor="#cc3344" onReturn={onSolve} /> : (
         <>
           <Card glow="#1e2848" style={{ marginBottom: 16, background: "#08091a", borderColor: "#1e2848", padding: "16px 20px" }}>
             <Label>ACROSTIC KEY — FIRST LETTER OF EACH ANSWER</Label>
             <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
-              {CW.map((c, i) => { const v = vals[i].trim().toUpperCase(); const ok = v === c.answer; const fl = ok ? c.keyLetter : (v.length > 0 ? v[0] : "_"); return <div key={i} style={{ width: 34, height: 42, display: "flex", alignItems: "center", justifyContent: "center", background: "#050610", border: `1px solid ${ok ? "#4a7aff44" : "#14182e"}`, flexDirection: "column", gap: 2 }}><span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 17, color: ok ? "#7a9fff" : "#1e2848", transition: "color .3s" }}>{fl}</span><span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 7, color: "#1e2848" }}>{i + 1}</span></div>; })}
+              {cwData.map((c, i) => { const v = vals[i].trim().toUpperCase(); const ok = v === c.answer; const fl = ok ? c.keyLetter : (v.length > 0 ? v[0] : "_"); return <div key={i} style={{ width: 34, height: 42, display: "flex", alignItems: "center", justifyContent: "center", background: "#050610", border: `1px solid ${ok ? "#4a7aff44" : "#14182e"}`, flexDirection: "column", gap: 2 }}><span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 17, color: ok ? "#7a9fff" : "#1e2848", transition: "color .3s" }}>{fl}</span><span style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 7, color: "#1e2848" }}>{i + 1}</span></div>; })}
             </div>
             <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 13, color: "#4a7aff", letterSpacing: 5 }}>{keyword}</div>
           </Card>
-          {CW.map((c, i) => (
+          {cwData.map((c, i) => (
             <Card key={i} glow="#1e2848" style={{ marginBottom: 8, padding: "13px 16px" }}>
               <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: "#1e2848", minWidth: 20 }}>{i + 1}.</div>

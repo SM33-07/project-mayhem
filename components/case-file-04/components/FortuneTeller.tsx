@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PuzzleProps } from "../types";
 
 const STATEMENTS = [
@@ -60,10 +60,28 @@ export default function FortuneTellerPuzzle({
     }
   };
 
+  const [correctWord, setCorrectWord] = useState("PARADOX");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/questions?caseId=04");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "fortune_teller");
+          if (q) setCorrectWord(q.answer.toUpperCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    load();
+  }, []);
+
   const verifyFinalWord = (e: React.FormEvent) => {
     e.preventDefault();
     if (disabled) return;
-    if (answerInput.trim().toUpperCase() === "PARADOX") {
+    if (answerInput.trim().toUpperCase() === correctWord) {
       setStatusState("SUCCESS");
       playSound("onFinalWordCorrect");
       if (onSolved) {

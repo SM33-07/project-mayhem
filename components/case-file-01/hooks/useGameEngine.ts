@@ -70,7 +70,7 @@ const LEVELS: Level[] = [
         puzzles: [
           { type: "lights_out", pattern: [1, 4, 7] },
           { type: "lights_out", pattern: [1, 4, 7] },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" }
+          { type: "question", question: "", answer: "" }
         ],
         solved: false
       },
@@ -78,7 +78,7 @@ const LEVELS: Level[] = [
         id: "a2",
         puzzles: [
           { type: "lights_out", pattern: [1, 4, 7] },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
+          { type: "question", question: "", answer: "" },
           { type: "lights_out", pattern: [1, 4, 7] }
         ],
         solved: false
@@ -86,8 +86,8 @@ const LEVELS: Level[] = [
       "25,24": {
         id: "a3",
         puzzles: [
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
+          { type: "question", question: "", answer: "" },
+          { type: "question", question: "", answer: "" },
           { type: "sequence", sequenceLength: 3 }
         ],
         solved: false
@@ -96,7 +96,7 @@ const LEVELS: Level[] = [
         id: "a4",
         puzzles: [
           { type: "lights_out", pattern: [1, 4, 7] },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
+          { type: "question", question: "", answer: "" },
           { type: "sequence", sequenceLength: 3 }
         ],
         solved: false
@@ -104,18 +104,18 @@ const LEVELS: Level[] = [
       "17,21": {
         id: "a5",
         puzzles: [
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" }
+          { type: "question", question: "", answer: "" },
+          { type: "question", question: "", answer: "" },
+          { type: "question", question: "", answer: "" }
         ],
         solved: false
       },
       "17,1": {
         id: "a6",
         puzzles: [
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" },
+          { type: "question", question: "", answer: "" },
           { type: "sequence", sequenceLength: 3 },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" }
+          { type: "question", question: "", answer: "" }
         ],
         solved: false
       },
@@ -124,7 +124,7 @@ const LEVELS: Level[] = [
         puzzles: [
           { type: "lights_out", pattern: [1, 4, 7] },
           { type: "sequence", sequenceLength: 3 },
-          { type: "question", question: "What is the primary color of the sun?", answer: "yellow" }
+          { type: "question", question: "", answer: "" }
         ],
         solved: false
       },
@@ -171,6 +171,37 @@ export function useGameEngine() {
 
   const [showStory, setShowStory] = useState<boolean>(false);
   const [gameWon, setGameWon] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function loadQuestions() {
+      try {
+        const res = await fetch("/api/questions?caseId=01");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          setAnomalies(prev => {
+            const updated = { ...prev };
+            data.questions.forEach((q: { anomalyId: string; puzzleIndex: number; question: string; answer: string }) => {
+              if (updated[q.anomalyId] && updated[q.anomalyId].puzzles[q.puzzleIndex]) {
+                updated[q.anomalyId] = {
+                  ...updated[q.anomalyId],
+                  puzzles: updated[q.anomalyId].puzzles.map((p, idx) => {
+                    if (idx === q.puzzleIndex) {
+                      return { ...p, question: q.question, answer: q.answer };
+                    }
+                    return p;
+                  })
+                };
+              }
+            });
+            return updated;
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load DB questions for Case 1:", err);
+      }
+    }
+    loadQuestions();
+  }, []);
 
   const currentLevel = LEVELS[levelIndex];
   const allSolved = Object.values(anomalies).every(a => a.solved);

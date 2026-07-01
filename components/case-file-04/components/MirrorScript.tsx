@@ -12,13 +12,29 @@ export default function MirrorScriptPuzzle({
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
-  const CORRECT_ANSWER = "carnival 17";
+  const [correctAnswer, setCorrectAnswer] = useState("carnival 17");
+
+  React.useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/questions?caseId=04");
+        const data = await res.json();
+        if (data.success && data.questions) {
+          const q = data.questions.find((x: any) => x.puzzleKey === "mirror_script");
+          if (q) setCorrectAnswer(q.answer.toLowerCase());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    load();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (disabled) return;
 
-    if (answer.toLowerCase().trim() === CORRECT_ANSWER) {
+    if (answer.toLowerCase().trim() === correctAnswer) {
       setIsCorrect(true);
       setSubmitted(true);
       if (onSolved) {
