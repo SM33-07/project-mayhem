@@ -14,7 +14,7 @@ const caseTimelineMap: Record<string, string> = {
   "06": "protocol-zero",
   "07": "operation-deadlight",
   "08": "the-card-cabinets",
-  "09": "final-stage",
+  "09": "final-stage-v2",
 };
 
 export async function GET() {
@@ -22,6 +22,7 @@ export async function GET() {
   const session = await getSession();
   
   const completedCases: Record<string, boolean> = {};
+  let stage1Completed = false;
 
   // 1. Initial status from cookies
   Object.keys(caseTimelineMap).forEach((num) => {
@@ -37,6 +38,9 @@ export async function GET() {
         .where(eq(timelineProgress.userId, session.userId));
         
       progress.forEach((row: any) => {
+        if (row.timelineId === "final-stage" && row.status === "completed") {
+          stage1Completed = true;
+        }
         const caseNum = Object.keys(caseTimelineMap).find(
           (key) => caseTimelineMap[key] === row.timelineId
         );
@@ -49,7 +53,7 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({ success: true, authenticated: !!session, completedCases });
+  return NextResponse.json({ success: true, authenticated: !!session, completedCases, stage1Completed });
 }
 
 export async function POST(request: NextRequest) {

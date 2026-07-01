@@ -58,6 +58,16 @@ export default function HuntPage() {
   const flyerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Migration: If they completed Quiz 1 but not Quiz 2
+    if (
+      localStorage.getItem("case-09-completed") === "true" &&
+      localStorage.getItem("case-09-stage-2-completed") !== "true"
+    ) {
+      localStorage.setItem("case-09-stage-1-completed", "true");
+      localStorage.removeItem("case-09-completed");
+      document.cookie = "case-09-completed=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+
     // 1. Initial client-side check from local storage & cookies
     const list: Record<string, boolean> = {};
     const caseFilesNums = Array.from({ length: 9 }, (_, i) => String(i + 1).padStart(2, "0"));
@@ -79,6 +89,16 @@ export default function HuntPage() {
         }
 
         if (data.success && data.completedCases) {
+          if (data.stage1Completed) {
+            localStorage.setItem("case-09-stage-1-completed", "true");
+            if (localStorage.getItem("case-09-stage-2-completed") !== "true") {
+              localStorage.removeItem("case-09-completed");
+              document.cookie = "case-09-completed=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+              data.completedCases["09"] = false;
+              list["09"] = false;
+            }
+          }
+
           const apiCompleted = data.completedCases as Record<string, boolean>;
           let changed = false;
           
@@ -381,6 +401,8 @@ export default function HuntPage() {
                   ? "/hunt/case-07"
                   : fileName === "Case-File-08"
                   ? "/hunt/case-08"
+                  : fileName === "Case-File-09"
+                  ? "/hunt/case-09"
                   : "#"
               }
               className="flex items-center justify-center h-36 md:h-44 bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.12)] hover:-translate-y-1 group relative overflow-hidden"
